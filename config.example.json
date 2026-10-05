@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "projectDir": "/workspace/my-project",
+  "stateDir": "/workspace/.discord-feedback/my-project",
+  "channelId": "123456789012345678",
+  "allowedUsers": "all",
+  "timeoutMs": 1800000,
+  "codexHome": "/workspace/.discord-feedback/my-project/codex-home",
+  "workflowPlugin": "namuk-process@namuk-marketplace"
+}

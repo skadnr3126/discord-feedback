@@ -1,0 +1,26 @@
+{
+  "name": "discord-feedback-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.5.0"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "chat": "node server.mjs",
+    "test": "node --test *.test.mjs",
+    "service:install": "python3 service/manage.py install",
+    "service:start": "python3 service/manage.py start",
+    "service:status": "python3 service/manage.py status",
+    "service:restart": "python3 service/manage.py restart",
+    "service:stop": "python3 service/manage.py stop",
+    "service:logs": "python3 service/manage.py logs",
+    "service:shutdown": "python3 service/manage.py shutdown"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "discord.js": "^14.27.0",
+    "zod": "^4.0.0"
+  }
+}
