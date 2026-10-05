@@ -47,7 +47,7 @@ python3 plugins/discord-feedback/scripts/manage.py doctor --project /workspace/m
 
 실행 중 Codex 인증이 만료되면 원래 Discord 메시지에 재인증 링크와 일회용 코드를 답장합니다. 사용자가 링크에서 로그인하고 코드를 입력하면 인증 완료를 알려줍니다. 완료 후 원래 요청을 다시 보내 작업을 이어갑니다. 코드는 15분 동안 유효하며, 실패하거나 시간이 초과되면 요청을 다시 보내 새 인증을 시작할 수 있습니다. 디바이스 코드 로그인은 ChatGPT 보안 설정 또는 워크스페이스 권한에서 허용해야 합니다.
 
-남욱 프로세스는 Discord 피드백 플러그인과 같은 `namuk-marketplace`에서 제공합니다. `setup`과 `update`는 봇이 사용하는 Codex 홈의 기존 설치를 재사용하고, 없는 경우에만 `codex plugin add namuk-process@namuk-marketplace`로 설치합니다. 이미 설치된 남욱 프로세스를 재설치하거나 자동 갱신하지 않습니다. 비활성화 상태면 활성화를 안내합니다.
+`setup`과 `update`는 봇의 Codex 홈에서 `namuk-marketplace`의 전체 플러그인을 조회하고 각각 `codex plugin add <name> -m namuk-marketplace`를 실행합니다. 미설치 플러그인은 설치하고 기존 플러그인도 최신화합니다.
 
 플러그인의 새 버전 설치 후 `update`와 `restart`를 실행해 런타임을 갱신합니다. `stop`은 해당 서비스만 종료하고 인증·세션·설정을 보존합니다. 다른 머신의 중복 서비스를 자동으로 찾거나 머신 종료 후 24시간 가용성을 보장하지 않습니다.
 

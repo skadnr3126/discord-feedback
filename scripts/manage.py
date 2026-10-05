@@ -129,13 +129,19 @@ def plugin_list(env):
 
 def install_workflow(config):
     env = environment(config)
-    selector = DEPENDENCY["name"] + "@namuk-marketplace"
-    installed = next((x for x in plugin_list(env) if x.get("pluginId") == selector), None)
-    if installed and not installed.get("enabled"):
-        raise SetupError("의존 플러그인이 비활성화되어 있습니다. 사용자 설정에서 활성화한 뒤 다시 설정하세요.")
-    if not installed:
-        run(["codex", "plugin", "add", selector, "--json"], env=env, capture=False)
-    return selector
+    marketplace = "namuk-marketplace"
+    result = run(["codex", "plugin", "list", "-m", marketplace, "--available", "--json"], env=env)
+    try:
+        catalog = json.loads(result.stdout)
+        names = list(dict.fromkeys(entry["name"] for entry in
+                                  catalog["installed"] + catalog["available"]))
+    except (ValueError, KeyError, TypeError) as error:
+        raise SetupError("마켓플레이스 플러그인 목록을 해석할 수 없습니다.") from error
+    if DEPENDENCY["name"] not in names:
+        raise SetupError("namuk-marketplace에서 namuk-process를 찾을 수 없습니다. 봇 Codex 홈의 등록을 확인하세요.")
+    for name in names:
+        run(["codex", "plugin", "add", name, "-m", marketplace, "--json"], env=env, capture=False)
+    return DEPENDENCY["name"] + "@" + marketplace
 
 
 def runtime_digest():

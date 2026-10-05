@@ -31,7 +31,7 @@ Linux/Unix, Python 3.10 이상과 pip, Node 24.5 이상(`--use-env-proxy` 지원
 
 | 명령 | 동작 |
 |---|---|
-| `setup` | 설정·남욱 프로세스·Node 패키지·Supervisor 준비 |
+| `setup` | 마켓플레이스 전체 플러그인 설치·최신화, 설정·Node 패키지·Supervisor 준비 |
 | `setup --start` | 준비 후 인증이 구성된 경우 실행·실제 점검 |
 | `login` | 해당 봇 전용 홈의 디바이스 로그인 |
 | `doctor` | 설정·환경변수 존재·설치·로그인 구성 상태 확인 |
@@ -40,7 +40,7 @@ Linux/Unix, Python 3.10 이상과 pip, Node 24.5 이상(`--use-env-proxy` 지원
 | `restart` | 해당 데몬을 종료하고 현재 환경으로 다시 실행 |
 | `stop` | 해당 서비스와 Supervisor 종료, 데이터 보존 |
 | `status`, `logs` | 해당 프로필의 상태·민감값 없는 운영 로그 확인 |
-| `update` | 현재 설치본의 새 런타임 준비, 남욱 프로세스는 기존 설치 재사용 후 없을 때만 설치 |
+| `update` | 마켓플레이스 전체 플러그인 설치·최신화, 현재 설치본의 새 런타임 준비 |
 
 모든 명령에 동일한 `--project`를 전달합니다. 사용자 지정 상태 경로를 썼으면 모든 명령에 동일한 `--state`도 전달합니다. `--channel`, `--allowed-users`, `--codex-home`, `--timeout-ms`는 `setup` 또는 `update`에서 설정합니다. 생략한 항목은 기존 설정을 유지합니다. 작업 시간 제한은 기본 30분, 최대 1시간입니다.
 
