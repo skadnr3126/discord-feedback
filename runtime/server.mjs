@@ -87,7 +87,7 @@ export async function startServer({ env = process.env, fetchApi = fetch,
   }), controller.signal, {
     sessionPath: resolve(serviceStateDirectory(env), 'session.json'),
     workspace: codexWorkspace(env),
-    workflowPlugin: env.DISCORD_WORKFLOW_PLUGIN || 'namuk-process@discord-feedback-workflows',
+    workflowPlugin: env.DISCORD_WORKFLOW_PLUGIN || 'namuk-process@namuk-marketplace',
     channelId: env.DISCORD_CHANNEL_ID || '',
   });
   const done = (async () => {

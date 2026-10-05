@@ -111,7 +111,7 @@ def environment(config):
         "DISCORD_CHANNEL_ID": config["channelId"],
         "DISCORD_ALLOWED_USER_IDS": config["allowedUsers"] if config["allowedUsers"] == "all" else ",".join(config["allowedUsers"]),
         "DISCORD_CODEX_TIMEOUT_MS": str(config["timeoutMs"]),
-        "DISCORD_WORKFLOW_PLUGIN": config.get("workflowPlugin", "namuk-process@discord-feedback-workflows"),
+        "DISCORD_WORKFLOW_PLUGIN": config.get("workflowPlugin", "namuk-process@namuk-marketplace"),
     })
     # Keep inherited proxy, CA and platform authentication variables intact.
     return env
@@ -127,76 +127,14 @@ def plugin_list(env):
         return []
 
 
-def workflow_cache_matches(entry, source, env):
-    cache = Path(env["CODEX_HOME"]) / "plugins/cache" / entry.get("marketplaceName", "") / entry["name"] / entry.get("version", "")
-    assets = [p for p in source.rglob("*") if p.is_file() and p.suffix in [".md", ".json", ".yaml"]
-              and not any(part in [".git", "node_modules", ".service"] for part in p.relative_to(source).parts)]
-    return bool(assets) and all((cache / p.relative_to(source)).is_file() and
-                               (cache / p.relative_to(source)).read_bytes() == p.read_bytes() for p in assets)
-
-
-def matching_workflow(env, ref):
-    for entry in plugin_list(env):
-        if entry.get("name") != DEPENDENCY["name"] or not entry.get("enabled"):
-            continue
-        source = entry.get("source", {})
-        if source.get("source") != "local" or not source.get("path"):
-            continue
-        directory = Path(source["path"])
-        if not (directory / ".git").exists():
-            continue
-        head = run(["git", "-C", directory, "rev-parse", "HEAD"], check=False)
-        origin = run(["git", "-C", directory, "remote", "get-url", "origin"], check=False)
-        dirty = run(["git", "-C", directory, "status", "--porcelain"], check=False)
-        if (head.returncode == origin.returncode == dirty.returncode == 0 and
-            head.stdout.strip() == ref and not dirty.stdout.strip() and
-            origin.stdout.strip().removesuffix(".git") == DEPENDENCY["repository"].removesuffix(".git") and
-            workflow_cache_matches(entry, directory, env)):
-            return entry["pluginId"]
-    return None
-
-
 def install_workflow(config):
     env = environment(config)
-    state = Path(config["stateDir"])
-    source = state / "sources" / DEPENDENCY["name"]
-    fresh = not source.exists()
-    if fresh:
-        source.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        run(["git", "clone", "--no-checkout", DEPENDENCY["repository"], source], capture=False)
-    if not fresh and run(["git", "-C", source, "status", "--porcelain"]).stdout.strip():
-        raise SetupError("의존 플러그인 소스에 미커밋 변경이 있습니다. 자동으로 덮어쓰지 않습니다.")
-    origin = run(["git", "-C", source, "remote", "get-url", "origin"]).stdout.strip()
-    if origin.removesuffix(".git") != DEPENDENCY["repository"].removesuffix(".git"):
-        raise SetupError("의존 플러그인의 원격 저장소가 설정과 다릅니다.")
-    run(["git", "-C", source, "fetch", "origin", "HEAD"], capture=False)
-    ref = run(["git", "-C", source, "rev-parse", "FETCH_HEAD^{commit}"]).stdout.strip()
-    config["workflowRef"] = ref
-    run(["git", "-C", source, "checkout", "--detach", ref], capture=False)
-    existing = matching_workflow(env, ref)
-    if existing:
-        return existing
-    name = "discord-feedback-workflows"
-    save_json(state / ".agents/plugins/marketplace.json", {
-        "name": name, "interface": {"displayName": "Discord feedback workflows"},
-        "plugins": [{"name": DEPENDENCY["name"], "source": {"source": "local", "path": "./sources/namuk-process"},
-                     "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"}, "category": "Productivity"}],
-    })
-    run(["codex", "plugin", "marketplace", "add", state, "--json"], env=env, capture=False)
-    selector = DEPENDENCY["name"] + "@" + name
+    selector = DEPENDENCY["name"] + "@namuk-marketplace"
     installed = next((x for x in plugin_list(env) if x.get("pluginId") == selector), None)
     if installed and not installed.get("enabled"):
         raise SetupError("의존 플러그인이 비활성화되어 있습니다. 사용자 설정에서 활성화한 뒤 다시 설정하세요.")
-    if installed:
-        # An old installed cache must not masquerade as an updated source revision.
-        provenance = state / "workflow-install.json"
-        if (not provenance.exists() or json.loads(provenance.read_text()).get("ref") != ref
-                or not workflow_cache_matches(installed, source, env)):
-            run(["codex", "plugin", "remove", selector], env=env)
-            installed = None
     if not installed:
         run(["codex", "plugin", "add", selector, "--json"], env=env, capture=False)
-    save_json(state / "workflow-install.json", {"repository": DEPENDENCY["repository"], "ref": ref, "pluginId": selector})
     return selector
 
 

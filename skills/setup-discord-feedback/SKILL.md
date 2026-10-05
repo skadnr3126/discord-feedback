@@ -35,7 +35,7 @@ python3 "<plugin-root>/scripts/manage.py" setup \
   --allowed-users all
 ```
 
-스크립트는 프로젝트별 설정, 원격 기본 브랜치의 최신 남욱 프로세스 버전, Node 의존성, Supervisor를 준비한다. 설치를 다시 실행하면 같은 프로필에서 남욱 프로세스를 최신 커밋으로 갱신한다. 종료 코드 2는 준비한 설정을 보존한 채 로그인 또는 필수 변수가 아직 필요하다는 뜻이다. JSON의 `checks`를 보고 해결한다.
+스크립트는 프로젝트별 설정, Node 의존성, Supervisor를 준비한다. 봇이 사용하는 Codex 홈에서 `namuk-process@namuk-marketplace`의 설치·활성화 상태를 먼저 확인한다. 보통 사용자가 이미 설치했으므로 기존 설치를 재사용하고, 없는 경우에만 같은 마켓플레이스의 `codex plugin add namuk-process@namuk-marketplace`로 설치한다. 별도 마켓플레이스를 등록하거나 소스를 복제하지 않으며, 설정을 다시 실행해도 기존 남욱 프로세스를 재설치하거나 갱신하지 않는다. 비활성화 상태면 사용자에게 활성화를 안내한다. 종료 코드 2는 준비한 설정을 보존한 채 로그인 또는 필수 변수가 아직 필요하다는 뜻이다. JSON의 `checks`를 보고 해결한다.
 
 기존 봇 전용 인증 경로를 사용하도록 사용자가 지정한 경우에만 `--codex-home "<existing-bot-home>"`을 추가한다. 주입된 클라우드 인증 파일을 복사하거나 덮어쓰지 않는다. 기본은 별도 봇 전용 Codex 홈이다.
 

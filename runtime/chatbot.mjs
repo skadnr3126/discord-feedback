@@ -123,7 +123,7 @@ export async function askCodex(message, session = {}, signal, options = {}) {
 
 export function createChatbot(discord, ask = askCodex, signal, {
   sessionPath, workspace = codexWorkspace(),
-  workflowPlugin = process.env.DISCORD_WORKFLOW_PLUGIN || 'namuk-process@discord-feedback-workflows',
+  workflowPlugin = process.env.DISCORD_WORKFLOW_PLUGIN || 'namuk-process@namuk-marketplace',
   channelId = process.env.DISCORD_CHANNEL_ID || '',
 } = {}) {
   const session = {};
